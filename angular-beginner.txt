@@ -287,3 +287,5 @@ products
 products/:id 
 
 the first three routes belong to AppRouting 
+
+Chapter 14: Angular CLI
