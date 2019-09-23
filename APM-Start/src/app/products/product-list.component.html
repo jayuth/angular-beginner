@@ -1,0 +1,68 @@
+<div class='card'>
+    <div class='card-header'>
+        {{pageTitle}}
+    </div>
+    <div class='card-body'>
+        <div class='row'>
+            <div class='col-md-2'>Filter by:</div>
+            <div class='col-md-4'>
+                 <!--ngModel Directive (two-way Binding) binds the value of an input field to a variable created in a class Component-->
+                <input type='text' 
+                    [(ngModel)]='listFilter'/>
+            </div>
+        </div>
+        <div class='row'>
+            <div class='col-md-6'>
+                <h4> {{ showFilteredBy ? 'Filtered by: ' + listFilter : ''}} </h4>
+            </div>
+        </div>
+        <!-- display the following table if products exist-->
+        <div class='table-responsive'>
+            <table class='table'
+            *ngIf='products && products.length'>
+                <thead>
+                    <tr>
+                        <th>
+                            <button class='btn btn-primary'
+                                (click)='toggleImage()'>
+                                <!-- use JavaScript to change text based on the value of showImage-->
+                                {{ showImage ? 'Hide' : 'Show'}} Image
+                            </button>
+                        </th>
+                        <th>Product</th>
+                        <th>Code</th>
+                        <th>Available</th>
+                        <th>Price</th>
+                        <th>5 Star Rating</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <tr *ngFor='let product of filteredProducts'>
+                            <!-- here table data has to match the table header defined above-->
+                            <td>
+                                <!--[target]='source in template expression'-->
+                                <img *ngIf='showImage' 
+                                    [src]='product.imageUrl'
+                                    [title]='product.productName'
+                                    [style.width.px]='imageWidth'
+                                    [style.margin.px]='imageMargin'
+                                    >
+                            </td>
+                            <td><a [routerLink]="['/products', product.productId]">
+                                {{ product.productName }}
+                                </a></td>
+                            <td>{{ product.productCode | lowercase | convertToSpaces: '-' }}</td>
+                            <td>{{ product.releaseDate }}</td>
+                            <td>{{ product.price | currency:'USD':'symbol':'1.2-2'}}</td>
+                            <!-- using nested component (directive) here -->
+                            <td><pm-star 
+                                [rating]='product.starRating'
+                                (ratingClicked) = 'onRatingClicked($event)'>
+                            </pm-star></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

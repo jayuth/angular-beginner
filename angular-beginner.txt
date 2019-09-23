@@ -1,0 +1,289 @@
+Angular
+-Component consists of:
+1. template - html, view 
+2. class - code associated with the view
+-- properties and methods such as action for button click
+3. metadata
+
+Angular modules: organize our apps in a cohesive block, combine template, class, and metadata together to build an application
+***each app has at least one angular module called the application root and the app can also have additional modules such as feature module
+
+Application architecture
+-index.html
+-app component
+product data service
+
+JavaScript ES 2015 is the newest 
+TypeScript
+- transpiled to plain JavaScript
+
+ES modules:
+code files that import/export something
+-organize our code files
+-code reuse
+
+Angular modules:
+-organize our application
+
+AppComponent - root component for our application
+
+Decorator - a function that adds metadata to a class, its members, or its method arguments
+
+Naming convention:
+feature_name.type_of_component.ts
+
+-How does Angular know about custom HTML elements (aka selector in @Component({}))? It looks in the Angular module. When Angular sees a custom HTML elements,
+it looks at the Angular module for a definition. So, we have to add that newly created Component to Angular module (app.module.ts).
+
+***a class is not a component unless it has a component decorator. A Component is a function 
+-selector: Component name in HTML. No need a selector if we don't use it in HTML
+-template: View's HTML
+
+-Defining a template in a Component
+better option - defining a template in a link - templateUrl: './product-list.component.html'
+
+./ refers to a path of a target file. This file must be in same folder as the component file
+
+@Component({
+    selector: 'pm-products',
+    templateUrl: './product-list.component.html'
+})
+
+***when you have a selector in @Component({}), it means that you can use it as a HTML directive 
+
+***app.module.ts is Angular Module
+When the application starts, AppComponent is loaded first
+
+-Interpolation - {{}} - called template expression
+
+**tr - table row
+-td - table data
+
+-Structural directives
+--*ngIf - removes or recreates a portion of a dorm tree based on the expression
+--*ngFor - uses for...of
+
+-for..of - iterates over iterable objects such as an array.
+-for..in - iterates over the properties of an object. Result: 0,1,2
+
+Summary:
+Inline template
+-use when short template, back tick
+
+Linked tmplate
+-for longer template 
+
+Chapter 6: data binding and pipes
+Types of binding
+-Interpolation - display a class property on the HTML page (read-only)
+-Property binding - set a value property of an element such as img tag (src, tilte, style) to a value defined in a template expression
+--<img [src]=''>
+-Event-binding - listens for events such as click button
+-Two-way binding - e.g. used in an input element. Usage: display a class property on the HTML page and update  a class property when a user makes a change
+
+Formatting using Pipes- pipes ( | ) transform bound properties before display
+
+Chapter 7: More on components
+-Interface is a Specification (properties and methods)
+
+-Activating a route with code - use the Router service
+
+-using an interface to define custom types such as IProduct
+
+-Encapsulating component styles : prevent style leaking to other components by creating a specific CSS for that component
+
+-Component lifecycle hooks:
+--OnInit - perform component initialization, retrieve data
+--OnChanges
+--OnDestroy
+
+-Custom pipes - format data to any formatting you want such as replace - (dash) with space
+
+Chapter 8: Nested components
+-its template only manages a fragment of a larger view
+-it has a selector
+-it optionally communicates with its container
+
+-outer component - parent component
+-inner component - child/nested component
+
+-Passing data from Container to Nested component (@Input() function)
+--ngOnChanges() listens to input sent from the Container and pass this input to the Nested component. 
+So, anytime the Container data changes (e.g. star rating), the ngOnChanges(0 will be executed
+--in other words, the nested component (partial view) recieves property value from the Container
+
+-Passing data from Child Nested component to Parent Container/Raising an Event (@Output() function)
+-- in order to let the Container know/communicate that we want it to recieve output from a nested component, we need to create an event to raise an event to the container
+--note that the output sent to a Container will be in a form of an event payload 
+
+***when using a component a a directive, we need to tell Angular where to find it by adding that component to Angular Module
+
+<!--using event binding to listen for ratingClicked event and access event payload from StarComponent-->
+Steps:
+When you want to pass data to a parent, you need to raise an event to let the parent know.
+Child class:
+
+Parent class:
+
+Summary:
+Container template:
+-use property binding to access nested component's data 
+
+Chapter 9: Services and dependency injection
+***whenever you need to use a service, inject that service a the class that needs it
+-external source - injector
+
+-create a service class and decorate it with Ijectable decorator
+
+-Injecting the service
+register the service first e.g. register it in root
+then define dependency to the class that will use that service in its constructor
+
+***Life cycle hooks: a constructor is executed before the OnInit() function
+
+Chapter 10: Retrieving data using HTTP
+-Composing operators: compose operators (map, filter) with the pipe method
+-subscribe to emit the observable source
+
+Promise vs Observable
+-Promise:
+provides a single future value
+-not lazy
+-not cancellable : either resolve or reject it
+
+-Observable:
+--Emits multiple values over time
+--Lazy - not emit until it has a subscriber
+--cancellable by subscribing
+--supports map, filter, reduce, etc
+***Observable doesn't emit a value until it subscribes
+
+note: http calls are a single asynchronous operation meaning that it will return a single Observable/ one element which is a http response
+
+-using pipe to access operators such as map, filter, reduce, etc
+-using tap and catchError operators to debug 
+
+-subscribe() function can parameters such as next function and error function
+
+Steps for http asynchronous process:
+1.ngOnInit is called when ProductListComponent is initialized and it then calls getProducts() method
+2.getProducts() returns an array of Iproduct Observable 
+3.we subscribe to the returned Iproduct  Observable 
+4.the HTTP GET request is submitted
+5.At this point, our filteredProducts is empty because we just submitted the HTTP GET request and no response yet
+
+Then, after some future point in time:
+1.The service recieves HTTP response from our request. The response is then mapped to IProduct array and the Observable emits that mapped data to a subscriber
+2.the subscriber then recieves emitted data and assigns product property to the emitted array of products
+
+Summary: 
+-Subscribing:
+1.any class that needs data from a data service, call the subscribe method to subscribe to the Observable
+2.provide a function to handle to handle an emitted item - normally assigns a property to the returned JSON object 
+
+Chapter 11: Routing basics
+-{ path: 'poroducts/:id', component: ProductDetailComponent }
+--id above is a parameter
+
+-when the route is activated, the associated view is displayed. But where will we want to display it? We use <router-outlet> directive to do so
+
+How routing works:
+1. when the user enters the URL with products path, the routerLink directive looks like this: [routerLink]="['/products']">Product List</a>
+2. Angular then looks for a definition of /products in Angular module which contains { path: 'poroducts/:id', component: ProductDetailComponent }
+3. Angular then locates the Component that associates with that route and display its view in a remplate that we define <router-outlet> directive
+
+Think of when to Nest or when to Route a Component
+-Nest-able components
+--define a selector
+--nest in another component
+--no route
+
+-Routed components (each component has its own page)
+-- no selector
+--configure routes instead since no selector
+--tie routes to actions
+
+-Steps to configure routes
+--configures route definitions
+--tie routes to actions
+--place the view using the <router-outlet> directive
+
+**note: order of routes matters
+
+Chapter 12: Navigation and roting additional techniques
+-Reading parameters from a route
+--snapshot is used when you only want to get the initial value of a parameter e.g. products/:id 
+--- the user will be navigated to the PorductListComponent first and then select a product (id) that they want to see its details 
+
+--observable is used when you expect the parameter to change without leaving the page. e.g. the 'Next' button on the ProductDetailComponent page
+to display the next product, the URL will change to the next product's id
+
+-everytime you use a servic, ask yourself if we have registered it in Angular module
+
+-Protecting routes with guards
+CanActivate - guard navigation to a route e.g. situation where you want to activate the route if a certain condition is met (e.g. the user provides correct format of product ID). 
+Otherwise, not activate the route (e.g. the user enters wrong format (string or anything rather than numeric) of product ID ).
+CanDeactivate - guard navigation from a route
+Resolve - pre0fetch data before activating a route
+CanLoad - prevent asynchronous routing 
+
+***creating a service requires you to use @Injectable decorator
+
+since a Guard is a service, it needs to be registered with an Angular injector
+
+***homework
+-get data from Web API
+-filter product by Id,
+
+Chapter 13: Angular module
+- a class with an NgModule decorator
+
+-the bootstrap array should be used in the root application module only -> AppModule
+
+-Declarations Array Truth:
+--every component, directive, and pipe must belong to one and only one Angular module 
+--all declared components, diractives, and pipes are private by default 
+
+-Export Array
+--never export a service because services are already shared with other classes in the application
+
+-Imports Array
+--imports: [ ... ] such as 3rd party module, @angular module, our own module, our defined-route module
+--impots are not inheritance
+
+-Providers Array
+--any service provider added to the providers array is registeredat the'root' of the application
+
+-Re-organize modules such as create a feature module for easy code management
+1. define what components, pipes a module needs 
+for example - ProductModule needs ProductListComponent and ProductDetailComponent  
+2. Then analyze if any needed components need any pipes, other modules, directives such as ngModel, ngIf, and routing 
+So, we need to import these capabilities to our ProductModule such as RouterModule, FormsModule, and System BrowserModule for ngFor and ngIf
+But we don't import System BrowserModule because this module should be imported in the root application module (AppModule). Instread we import the CommonModule
+CommonModule exposes ngFor and ngIf directives. Note that the BrowserModule  itself imports and exports the CommonModule so this is why we can access to ng directives
+
+At the end we need to import ProductModule to the AppModule. Otherwise, Angular will not find directives such as selector defined in ProductModule components
+
+In a feature module, we use forChild for RouterModule instead of forRoot.
+
+Module CLI
+ng g m shared/shared --flat -m products/product.module
+-m flag is used to specify a module that we need to import a new module to 
+
+Shared Module:
+in a shared module, we need to export modules that other modules need so those modules can use exported modules
+
+-Declartions array define modules that belong to that module
+
+-bootstrap: [AppComponent] - when the application is launched, this module will be loaded. bootstrap = startup components
+
+**routing url order matters. e.g. ProductModule should come before AppRouting module. Otherwies, the ProductModule routes will not be accessible because of the wild card (**) route
+For example:
+
+Welcome
+''
+**
+products
+products/:id 
+
+the first three routes belong to AppRouting 
